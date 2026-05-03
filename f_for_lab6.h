@@ -123,7 +123,7 @@ typedef struct {
 
 void stack_init(Stack *s);
 void stack_push(Stack *s, BankCustomer_u *c);
-int  stack_pop(Stack *s, BankCustomer_u *out);
+int stack_pop(Stack *s, BankCustomer_u *out);
 void stack_display(Stack *s);
 void stack_search(Stack *s, uint32_t acc);
 void stack_save(Stack *s, const char *fn, int binary);
@@ -136,7 +136,7 @@ typedef struct {
 
 void sq_init(SimpleQueue *q);
 void sq_enqueue(SimpleQueue *q, BankCustomer_u *c);
-int  sq_dequeue(SimpleQueue *q, BankCustomer_u *out);
+int sq_dequeue(SimpleQueue *q, BankCustomer_u *out);
 void sq_display(SimpleQueue *q);
 void sq_search(SimpleQueue *q, uint32_t acc);
 void sq_save(SimpleQueue *q, const char *fn, int binary);
@@ -149,9 +149,9 @@ typedef struct {
 
 void deq_init(Deque *d);
 void deq_push_front(Deque *d, BankCustomer_u *c);
-void deq_push_rear (Deque *d, BankCustomer_u *c);
-int  deq_pop_front (Deque *d, BankCustomer_u *out);
-int  deq_pop_rear  (Deque *d, BankCustomer_u *out);
+void deq_push_rear(Deque *d, BankCustomer_u *c);
+int deq_pop_front(Deque *d, BankCustomer_u *out);
+int deq_pop_rear(Deque *d, BankCustomer_u *out);
 void deq_display(Deque *d);
 void deq_search(Deque *d, uint32_t acc);
 void deq_save(Deque *d, const char *fn, int binary);
@@ -177,7 +177,7 @@ typedef struct {
 
 void pq_init(PriorityQueue *pq);
 void pq_insert(PriorityQueue *pq, BankCustomer_u *c);
-int  pq_remove(PriorityQueue *pq, BankCustomer_u *out);
+int pq_remove(PriorityQueue *pq, BankCustomer_u *out);
 void pq_display(PriorityQueue *pq);
 void pq_search(PriorityQueue *pq, uint32_t acc);
 void pq_save(PriorityQueue *pq, const char *fn, int binary);
