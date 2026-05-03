@@ -13,6 +13,129 @@
 #include "f_for_lab6.h"
 
 /* ------------------------------------------------------------------ */
+void stack_init(Stack *s) { s->top = NULL; }
+
+void stack_push(Stack *s, BankCustomer_u *c) {
+    Node *n = malloc(sizeof(Node));
+    n->data = *c;
+    n->next = s->top;
+    s->top = n;
+}
+
+int stack_pop(Stack *s, BankCustomer_u *out) {
+    if (!s->top) return 0;
+    Node *t = s->top;
+    *out = t->data;
+    s->top = t->next;
+    free(t);
+    return 1;
+}
+
+void stack_display(Stack *s) {
+    Node *cur = s->top;
+    while (cur) {
+        printf("Acc: %u\n", *bc_accnum(&cur->data));
+        cur = cur->next;
+    }
+}
+
+void sq_init(SimpleQueue *q) {
+    q->front = q->rear = NULL;
+}
+
+void sq_enqueue(SimpleQueue *q, BankCustomer_u *c) {
+    Node *n = malloc(sizeof(Node));
+    n->data = *c;
+    n->next = NULL;
+
+    if (!q->rear)
+        q->front = q->rear = n;
+    else {
+        q->rear->next = n;
+        q->rear = n;
+    }
+}
+
+int sq_dequeue(SimpleQueue *q, BankCustomer_u *out) {
+    if (!q->front) return 0;
+
+    Node *t = q->front;
+    *out = t->data;
+    q->front = t->next;
+
+    if (!q->front) q->rear = NULL;
+
+    free(t);
+    return 1;
+}
+
+void deq_push_front(Deque *d, BankCustomer_u *c) {
+    Node *n = malloc(sizeof(Node));
+    n->data = *c;
+    n->next = d->front;
+    d->front = n;
+    if (!d->rear) d->rear = n;
+}
+
+void deq_push_rear(Deque *d, BankCustomer_u *c) {
+    Node *n = malloc(sizeof(Node));
+    n->data = *c;
+    n->next = NULL;
+
+    if (!d->rear)
+        d->front = d->rear = n;
+    else {
+        d->rear->next = n;
+        d->rear = n;
+    }
+}
+
+void cq_init(CircularQueue *q, int cap) {
+    q->rear = NULL;
+}
+
+void cq_enqueue(CircularQueue *q, BankCustomer_u *c) {
+    Node *n = malloc(sizeof(Node));
+    n->data = *c;
+
+    if (!q->rear) {
+        n->next = n;
+        q->rear = n;
+    } else {
+        n->next = q->rear->next;
+        q->rear->next = n;
+        q->rear = n;
+    }
+}
+
+void pq_insert(PriorityQueue *pq, BankCustomer_u *c) {
+    Node *n = malloc(sizeof(Node));
+    n->data = *c;
+    n->next = NULL;
+
+    if (!pq->head || *bc_rate(&pq->head->data) < *bc_rate(c)) {
+        n->next = pq->head;
+        pq->head = n;
+        return;
+    }
+
+    Node *cur = pq->head;
+    while (cur->next && *bc_rate(&cur->next->data) >= *bc_rate(c))
+        cur = cur->next;
+
+    n->next = cur->next;
+    cur->next = n;
+}
+
+int pq_remove(PriorityQueue *pq, BankCustomer_u *out) {
+    if (!pq->head) return 0;
+    Node *t = pq->head;
+    *out = t->data;
+    pq->head = t->next;
+    free(t);
+    return 1;
+}
+
 static void ads_action_menu(const char *ads_name) {
     printf("\n--- %s Actions ---\n", ads_name);
     printf("  1. Add / Push / Enqueue\n");
@@ -236,26 +359,4 @@ static void menu_priority(PriorityQueue *pq, BankCustomer_u **arr, int arr_size)
     } while (ch != 0);
 }
 
-/* ================================================================== */
-/*  TOP-LEVEL MENU                                                      */
-/* ================================================================== */
-static void print_main_menu(void) {
-    printf("\n============== BANK SYSTEM Lab 6 (Union + ADS) ==============\n");
-    printf("  --- Flat Array (Union struct) ---\n");
-    printf("  1. Add customer\n");
-    printf("  2. Display all customers\n");
-    printf("  3. Modify / Delete customer\n");
-    printf("  4. Sort customers\n");
-    printf("  5. Save to binary file\n");
-    printf("  6. Load from binary file\n");
-    printf("  --- ADS Operations ---\n");
-    printf("  7. Stack\n");
-    printf("  8. Simple Queue\n");
-    printf("  9. Deque (Double-Ended Queue)\n");
-    printf(" 10. Circular Queue\n");
-    printf(" 11. Priority Queue (by deposit rate)\n");
-    printf("  0. Exit\n");
-    printf("==============================================================\n");
-    printf("Choice: ");
-}
 

@@ -109,6 +109,11 @@ void modify_customer_u(BankCustomer_u **c, int *size);
 void sort_menu_u(BankCustomer_u *c, int size);
 void write_to_file_u(BankCustomer_u *c, int size);
 void read_from_file_u(BankCustomer_u **c, int *size, int *capacity);
+void print_customer_u(BankCustomer_u *p, int index);
+void calculate_duration_u(DateTime_u opening_date, int *years, int *months, int *days);
+void radix_sort_duration_u(BankCustomer_u *customers, int size);
+void write_to_txt_u(BankCustomer_u *c, int size);
+void read_from_txt_u(BankCustomer_u **c, int *size, int *cap);
 
 /* ===================== LIST NODE ===================== */
 typedef struct Node {
