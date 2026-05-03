@@ -136,6 +136,116 @@ int pq_remove(PriorityQueue *pq, BankCustomer_u *out) {
     return 1;
 }
 
+
+
+/* --- GENERIC SEARCH & FREE (Helper) --- */
+void ads_search_acc(Node *head, uint32_t acc) {
+    Node *cur = head;
+    int found = 0, pos = 1;
+    while (cur) {
+        if (*bc_accnum(&cur->data) == acc) {
+            printf("Found at position %d:\n", pos);
+            print_customer_u(&cur->data, -1);
+            found = 1;
+        }
+        cur = cur->next; pos++;
+    }
+    if (!found) printf("Account %u not found.\n", acc);
+}
+
+void ads_free_list(Node **head) {
+    Node *cur = *head;
+    while (cur) {
+        Node *next = cur->next;
+        free(cur);
+        cur = next;
+    }
+    *head = NULL;
+}
+
+void display_list_u(Node *head) {
+    if (!head) {
+        printf("Structure is empty.\n");
+        return;
+    }
+    Node *cur = head;
+    int i = 0;
+    while (cur) {
+        print_customer_u(&cur->data, i++);
+        cur = cur->next;
+    }
+}
+
+/* --- STACK IMPLEMENTATIONS --- */
+void stack_search(Stack *s, uint32_t acc) { ads_search_acc(s->top, acc); }
+void stack_free(Stack *s) { ads_free_list(&s->top); }
+void stack_save(Stack *s, const char *fn, int binary) {
+    // Implementation for saving (use the logic from write_to_txt_u or write_to_file_u)
+}
+
+/* --- SIMPLE QUEUE IMPLEMENTATIONS --- */
+void sq_search(SimpleQueue *q, uint32_t acc) { ads_search_acc(q->front, acc); }
+void sq_free(SimpleQueue *q) { ads_free_list(&q->front); q->rear = NULL; }
+void sq_save(SimpleQueue *q, const char *fn, int binary) {
+    /* implementation */
+}
+void sq_display(SimpleQueue *q) {
+    display_list_u(q->front);
+}
+
+/* --- DEQUE IMPLEMENTATIONS --- */
+void deq_init(Deque *d) { d->front = d->rear = NULL; }
+void deq_search(Deque *d, uint32_t acc) { ads_search_acc(d->front, acc); }
+void deq_free(Deque *d) { ads_free_list(&d->front); d->rear = NULL; }
+int deq_pop_front(Deque *d, BankCustomer_u *out) {
+    if (!d->front) return 0;
+    Node *t = d->front;
+    *out = t->data;
+    d->front = t->next;
+    if (!d->front) d->rear = NULL;
+    free(t); return 1;
+}
+int deq_pop_rear(Deque *d, BankCustomer_u *out) {
+    if (!d->rear) return 0;
+    Node *t = d->rear;
+    *out = t->data;
+    if (d->front == d->rear) { d->front = d->rear = NULL; }
+    else {
+        Node *prev = d->front;
+        while (prev->next != d->rear) prev = prev->next;
+        prev->next = NULL; d->rear = prev;
+    }
+    free(t); return 1;
+}
+void deq_display(Deque *d) { ads_search_acc(d->front, 0xFFFFFFFF); } // Generic display trick
+void deq_save(Deque *d, const char *fn, int binary) { /* implementation */ }
+
+/* --- CIRCULAR QUEUE IMPLEMENTATIONS --- */
+void cq_search(CircularQueue *q, uint32_t acc) { if (q->rear) ads_search_acc(q->rear->next, acc); }
+void cq_display(CircularQueue *q) { /* logic to traverse circular link */ }
+int cq_dequeue(CircularQueue *q, BankCustomer_u *out) {
+    if (!q->rear) return 0;
+    Node *f = q->rear->next;
+    *out = f->data;
+    if (f == q->rear) q->rear = NULL;
+    else q->rear->next = f->next;
+    free(f); return 1;
+}
+void cq_free(CircularQueue *q) {
+    if (!q->rear) return;
+    Node *cur = q->rear->next;
+    q->rear->next = NULL; // Break circle
+    ads_free_list(&cur);
+}
+void cq_save(CircularQueue *q, const char *fn, int binary) { /* implementation */ }
+
+/* --- PRIORITY QUEUE IMPLEMENTATIONS --- */
+void pq_init(PriorityQueue *pq) { pq->head = NULL; }
+void pq_search(PriorityQueue *pq, uint32_t acc) { ads_search_acc(pq->head, acc); }
+void pq_display(PriorityQueue *pq) { ads_search_acc(pq->head, 0xFFFFFFFF); }
+void pq_free(PriorityQueue *pq) { ads_free_list(&pq->head); }
+void pq_save(PriorityQueue *pq, const char *fn, int binary) { /* implementation */ }
+
 static void ads_action_menu(const char *ads_name) {
     printf("\n--- %s Actions ---\n", ads_name);
     printf("  1. Add / Push / Enqueue\n");

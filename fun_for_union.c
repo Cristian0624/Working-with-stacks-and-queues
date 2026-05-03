@@ -57,6 +57,12 @@ void calculate_duration_u(DateTime_u opening_date, int *years, int *months, int 
     if (*months < 0) { (*years)--; *months += 12; }
 }
 
+void reverse_customers_u(BankCustomer_u *c, int size) {
+    for (int i = 0; i < size / 2; i++) {
+        swap_customers_u(&c[i], &c[size - 1 - i]);
+    }
+}
+
 void radix_sort_duration_u(BankCustomer_u *customers, int size) {
     if (size <= 1) return;
     int *keys = malloc(size * sizeof(int));
@@ -90,9 +96,44 @@ void radix_sort_duration_u(BankCustomer_u *customers, int size) {
             keys[i] = y * 365 + m * 30 + d;
         }
     }
+    reverse_customers_u(customers, size);
     free(keys);
 }
 
+void write_output_sorted_u(BankCustomer_u *customers, int size) {
+    if (size == 0) {
+        printf("\nNo customers to sort!\n");
+        return;
+    }
+
+    // Create a temporary copy to avoid messing up the main array order
+    BankCustomer_u *sorted = malloc(size * sizeof(BankCustomer_u));
+    memcpy(sorted, customers, size * sizeof(BankCustomer_u));
+
+    radix_sort_duration_u(sorted, size);
+
+    FILE *fp = fopen("oldest_customers.txt", "w");
+    if (!fp) {
+        printf("Error opening file!\n");
+        free(sorted);
+        return;
+    }
+
+    fprintf(fp, "=== Customer Duration (Descending - Oldest First) ===\n\n");
+    for (int i = 0; i < size; i++) {
+        int y, m, d;
+        calculate_duration_u(*bc_opendate(&sorted[i]), &y, &m, &d);
+        fprintf(fp, "Account #%u - %s %s: %d years, %d months, %d days\n",
+                *bc_accnum(&sorted[i]),
+                bc_name(&sorted[i]),
+                bc_surname(&sorted[i]),
+                y, m, d);
+    }
+
+    fclose(fp);
+    free(sorted);
+    printf("Sorted durations saved to oldest_customers.txt\n");
+}
 
 void add_bank_customer_u(BankCustomer_u **c, int *size, int *capacity) {
     ensure_memory_u(c, size, capacity);
@@ -403,7 +444,7 @@ void sort_menu_u(BankCustomer_u *c, int size) {
             break;
         }
         case 5: {
-            radix_sort_duration_u(c, size);
+            write_output_sorted_u(c, size);
             printf("Sorted by duration (Oldest accounts first).\n");
             break;
         }
@@ -474,6 +515,7 @@ void write_to_txt_u(BankCustomer_u *c, int size) {
                 *bc_rate(&c[i]), *bc_money(&c[i]),
                 bc_opendate(&c[i])->raw, bc_accdate(&c[i])->raw);
     }
+    printf("Saved %d customers.\n", size);
     fclose(f);
 }
 
@@ -492,5 +534,6 @@ void read_from_txt_u(BankCustomer_u **c, int *size, int *cap) {
                bc_rate(p), bc_money(p), &bc_opendate(p)->raw, &bc_accdate(p)->raw);
         (*size)++;
     }
+    printf("Loaded %d customers.\n", *size);
     fclose(f);
 }

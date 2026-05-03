@@ -1,0 +1,5 @@
+=== Customer Duration (Descending - Oldest First) ===
+
+Account #1003 - Postica Ian-Marius: 3 years, 11 months, 9 days
+Account #1001 - Gluhu Cristian: 0 years, 7 months, 21 days
+Account #1004 - Novac Ion: 0 years, 6 months, 29 days
