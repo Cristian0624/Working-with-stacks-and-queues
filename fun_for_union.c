@@ -32,7 +32,7 @@ void get_current_date_u(DateTime_u *d) {
     dt_set_min  (d, (uint64_t)tm->tm_min);
 }
 
-// 2) Implement print_customer_u function
+// Implement print_customer_u function
 void print_customer_u(BankCustomer_u *p, int index) {
     if (index >= 0) printf("\nCustomer %d\n", index + 1);
     printf("Name: %s %s\n", bc_name(p), bc_surname(p));
@@ -44,7 +44,7 @@ void print_customer_u(BankCustomer_u *p, int index) {
            (unsigned)dt_get_year(bc_opendate(p)));
 }
 
-// 1) Logic for duration calculation and sorting
+// Logic for duration calculation and sorting
 void calculate_duration_u(DateTime_u opening_date, int *years, int *months, int *days) {
     DateTime_u today;
     get_current_date_u(&today);
